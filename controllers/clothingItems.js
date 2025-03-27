@@ -1,4 +1,4 @@
-const Item = require("../models/clothingItem.js");
+const Item = require("../models/clothingItem");
 const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND} = require("../utils/errors");
 
 const createItem = (req, res) => {
