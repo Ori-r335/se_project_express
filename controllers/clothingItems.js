@@ -1,10 +1,13 @@
 const Item = require("../models/clothingItem.js");
-const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NO_CONTENT} = require("../utils/errors.js");
+const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NO_CONTENT,NOT_FOUND} = require("../utils/errors.js");
 
 const createItem = (req, res) => {
- const {name, weather, imageURL} = req.body;
+  
+ const {name, weather, imageUrl} = req.body;
+
  const owner = req.user._id;
- Item.create({name, weather, imageURL, owner})
+ console.log(name);
+ Item.create({name, weather, imageUrl, owner})
  .then((item)=>{
   res.status(CREATED).send(item);
  })
@@ -36,9 +39,9 @@ const getItems = (req, res) => {
 //for later feature update item
 // const updateItem = (req, res) => {
 //   const {itemId} = req.params;
-//   const {imageURL}= req.body;
-//   console.log(itemId, imageURL)
-//   Item.findByIdAndUpdate(itemId, {$set: {imageURL}})
+//   const {imageUrl}= req.body;
+//   console.log(itemId, imageUrl)
+//   Item.findByIdAndUpdate(itemId, {$set: {imageUrl}})
 //   .orFail()
 //   .then((item)=>{
 //     res.status(OK).send({data: item});
@@ -57,12 +60,24 @@ const deleteItem = (req, res) => {
   Item.findByIdAndDelete(itemId)
   .orFail()
   .then((item)=>{
-    res.status(NO_CONTENT).send({});
+    res.send({item});
   })
   .catch((err)=>{
     console.error(err);
-    return res.status(SERVER_ERROR).send({message: err.message});
-  })
+      if (err.name === "DocumentNotFoundError") {
+        return res
+          .status(NOT_FOUND)
+          .json({ message: "Id provided was not found" });
+      }
+      if (err.name === "CastError") {
+        return res
+          .status(BAD_REQUEST)
+          .json({ message: "Invalid data provided" });
+      }
+      return res
+        .status(SERVER_ERROR)
+        .json({ message: "An error has occurred on the server" });
+    });
 };
 
 
@@ -100,7 +115,7 @@ const dislikeItem = (req, res) => {
 )
   .orFail()
   .then((item)=>{
-    res.status(NO_CONTENT).send({});
+    res.send({item});
   })
   .catch((err)=>{
     console.error(err);
