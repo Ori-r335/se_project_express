@@ -1,8 +1,8 @@
 const Item = require("../models/clothingItem.js");
-const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NO_CONTENT,NOT_FOUND} = require("../utils/errors.js");
+const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND} = require("../utils/errors");
 
 const createItem = (req, res) => {
-  
+
  const {name, weather, imageUrl} = req.body;
 
  const owner = req.user._id;
@@ -36,7 +36,7 @@ const getItems = (req, res) => {
   })
 };
 
-//for later feature update item
+// for later feature update item
 // const updateItem = (req, res) => {
 //   const {itemId} = req.params;
 //   const {imageUrl}= req.body;
@@ -98,7 +98,7 @@ const likeItem = (req, res) => {
       return res
         .status(NOT_FOUND)
         .send({ message: "Id provided was not found" });
-    } else if (err.name === "CastError") {
+    } if (err.name === "CastError") {
       return res
         .status(BAD_REQUEST)
         .send({ message: "Invalid data provided" });
@@ -123,7 +123,7 @@ const dislikeItem = (req, res) => {
       return res
         .status(NOT_FOUND)
         .send({ message: "Id provided was not found" });
-    } else if (err.name === "CastError") {
+    } if (err.name === "CastError") {
       return res
         .status(BAD_REQUEST)
         .send({ message: "Invalid data provided" });

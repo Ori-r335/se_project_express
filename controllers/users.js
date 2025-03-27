@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND} = require("../utils/errors.js");
+const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND} = require("../utils/errors");
 
 const getUsers = (req, res) => {
   User.find({})
@@ -46,7 +46,7 @@ const getUser = (req, res) => {
       return res
         .status(NOT_FOUND)
         .send({ message: "Id provided was not found" });
-    } else if (err.name === "CastError") {
+    } if (err.name === "CastError") {
       return res
         .status(BAD_REQUEST)
         .send({ message: "Invalid data provided" });
