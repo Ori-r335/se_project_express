@@ -32,26 +32,9 @@ const getItems = (req, res) => {
   })
   .catch((err)=>{
     console.error(err);
-    return res.status(SERVER_ERROR).send({message: err.message});
+    return res.status(SERVER_ERROR).send({message: "An error has occurred on the server"});
   })
 };
-
-// for later feature update item
-// const updateItem = (req, res) => {
-//   const {itemId} = req.params;
-//   const {imageUrl}= req.body;
-//   console.log(itemId, imageUrl)
-//   Item.findByIdAndUpdate(itemId, {$set: {imageUrl}})
-//   .orFail()
-//   .then((item)=>{
-//     res.status(OK).send({data: item});
-//   })
-//   .catch((err)=>{
-//     console.error(err);
-//     return res.status(SERVER_ERROR).send({message: err.message});
-//   })
-// };
-
 
 const deleteItem = (req, res) => {
   const {itemId} = req.params;
