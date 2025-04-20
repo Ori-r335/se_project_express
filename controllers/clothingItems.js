@@ -38,12 +38,16 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const {itemId} = req.params;
+  const itemOwner = req.user._id;
 
-  console.log(itemId)
   Item.findByIdAndDelete(itemId)
-  .orFail()
-  .then((item)=>{
-    res.send({item});
+    .orFail(() => new NotFoundError('Item not found'))
+    .then((item) => {
+      if (item.owner.toString() !== itemOwner) {
+        throw new ForbiddenError('You do not have permission to delete this item');
+      }
+
+      return Item.findByIdAndDelete(itemId);
   })
   .catch((err)=>{
     console.error(err);
