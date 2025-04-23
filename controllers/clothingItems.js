@@ -39,11 +39,8 @@ const deleteItem = (req, res) => {
   const {itemId} = req.params;
   const itemOwner = req.user._id;
 
-  Item.findByIdAndDelete(itemId)
-    .orFail(() => {
-      const error = new Error('Item not found');
-      error.statusCode = NOT_FOUND;
-      throw error;})
+  Item.findById(itemId)
+    .orFail ()
     .then((item) => {
       if (item.owner.toString() !== itemOwner) {
         const error = new Error('You do not have permission to delete this item');
@@ -51,7 +48,10 @@ const deleteItem = (req, res) => {
         throw error;
       }
 
-      return Item.findByIdAndDelete(itemId);
+      return Item.findByIdAndDelete(itemId)
+      .then((deletedItem) => {
+        res.send({data: deletedItem});
+      });
   })
   .catch((err)=>{
     console.error(err);
@@ -64,6 +64,8 @@ const deleteItem = (req, res) => {
         return res
           .status(BAD_REQUEST)
           .json({ message: "Invalid data provided" });
+      }if (err.statusCode === FORBIDDEN) {
+        return res.status(FORBIDDEN).json({ message: "You do not have permission to perform this action" });
       }
       return res
         .status(SERVER_ERROR)

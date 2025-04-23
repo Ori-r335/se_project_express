@@ -103,7 +103,7 @@ const login = (req, res) => {
 };
 
 
-const updateUser = (req, res, next) => {
+const updateUser = (req, res) => {
   const { name, avatar } = req.body;
   const userId = req.user._id;
 
@@ -126,8 +126,11 @@ const updateUser = (req, res, next) => {
           .status(BAD_REQUEST)
           .send({ message: "Invalid data provided" });
       }
-      return next(err);
-    });
+      return res
+      .status(SERVER_ERROR)
+      .send({ message: "An error has occured on the server" });
+
+   });
 };
 
 module.exports = {updateUser, createUser, getCurrentUser, login };
