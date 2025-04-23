@@ -27,9 +27,8 @@ const createUser = (req, res) => {
       }
       return bcrypt.hash(password, 10);
     })
-    .then((hash) => {
-      return User.create({ name, avatar, email, password: hash });
-    })
+    .then((hash) => User.create({ name, avatar, email, password: hash })
+    )
     .then((user) => {
       const userWithoutPassword = user.toObject();
       delete userWithoutPassword.password;
@@ -116,7 +115,10 @@ const updateUser = (req, res, next) => {
       runValidators: true,
     }
   )
-    .orFail(() => new NotFoundError('User not found'))
+    .orFail(() => {
+      const error = new Error('User not found');
+      error.statusCode = NOT_FOUND;
+      throw error;})
     .then((updatedUser) => res.send(updatedUser))
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -124,7 +126,7 @@ const updateUser = (req, res, next) => {
           .status(BAD_REQUEST)
           .send({ message: "Invalid data provided" });
       }
-      next(err);
+      return next(err);
     });
 };
 

@@ -1,12 +1,11 @@
 const Item = require("../models/clothingItem");
-const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND} = require("../utils/errors");
+const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND, FORBIDDEN} = require("../utils/errors");
 
 const createItem = (req, res) => {
 
  const {name, weather, imageUrl} = req.body;
 
  const owner = req.user._id;
- console.log(name);
  Item.create({name, weather, imageUrl, owner})
  .then((item)=>{
   res.status(CREATED).send(item);
@@ -41,10 +40,15 @@ const deleteItem = (req, res) => {
   const itemOwner = req.user._id;
 
   Item.findByIdAndDelete(itemId)
-    .orFail(() => new NotFoundError('Item not found'))
+    .orFail(() => {
+      const error = new Error('Item not found');
+      error.statusCode = NOT_FOUND;
+      throw error;})
     .then((item) => {
       if (item.owner.toString() !== itemOwner) {
-        throw new ForbiddenError('You do not have permission to delete this item');
+        const error = new Error('You do not have permission to delete this item');
+        error.statusCode = FORBIDDEN;
+        throw error;
       }
 
       return Item.findByIdAndDelete(itemId);
