@@ -27,7 +27,7 @@ const createItem = (req, res) => {
 const getItems = (req, res) => {
   Item.find()
   .then((items)=>{
-    res.status(OK).send(items);
+    res.status(OK).send(items)
   })
   .catch((err)=>{
     console.error(err);
