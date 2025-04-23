@@ -1,8 +1,8 @@
-const User = require("../models/user");
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const User = require("../models/user");
 const {OK,CREATED,BAD_REQUEST,SERVER_ERROR,NOT_FOUND,CONFLICT_ERROR, ERROR} = require("../utils/errors");
 const { JWT_SECRET } = require("../utils/config");
-const bcrypt = require('bcryptjs');
 
 // const getUsers = (req, res) => {
 //   User.find({})
@@ -16,7 +16,7 @@ const bcrypt = require('bcryptjs');
 // };
 
 
-const createUser = (req, res, next) => {
+const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
   User.findOne({ email })
     .then((existingUser) => {
@@ -45,7 +45,7 @@ const createUser = (req, res, next) => {
         return res.status(CONFLICT_ERROR).send({ message: "Conflict: Email already exists" });
       }
       return res.status(SERVER_ERROR).send({ message: "An error has occurred on the server" });
-    });
+    })
 };
 
 
